@@ -22,8 +22,8 @@ export default {
         '5xl': '20px 20px 50px rgba(0, 0, 0, 0.5)',
       },
       colors: {
-        primary: '#380A23',
-      },
+        primary: '#010542',
+      }
     },
   },
   plugins: [],
