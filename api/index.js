@@ -1,3 +1,4 @@
+
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -14,6 +15,11 @@ const fs = require('fs');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const path = require('path');
+const EventEmitter = require('events');
+// Set the appropriate number based on your application
+
+// ... rest of your code
+
 
 
 require('dotenv').config()
@@ -32,6 +38,9 @@ app.use(cors({
 
 mongoose.connect(process.env.MONGO_URL);
 
+
+
+EventEmitter.defaultMaxListeners = 15; 
 function getUserDataFromReq(req) {
     return new Promise((resolve, reject) => {
         jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData) => {
@@ -160,6 +169,92 @@ app.post("/forgot-password", async (req, res) => {
     }
 });
 
+app.get('/user-role/:email', (req, res) => {
+    const { email } = req.params;
+    const user = users.find((user) => user.email === email);
+  
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+  
+    res.json({ role: user.role });
+  });
+  
+  // Route for updating password
+  app.post('/update-password', async (req, res) => {
+    try {
+      const { email, password, userRole } = req.body;
+  
+      // Retrieve user from the database
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      // Check user role and update password based on the role
+      if (user.role === 'admin') {
+        if (userRole === 'adminPassword') {
+          // Update admin password logic
+          user.adminPassword = password;
+        } else {
+          return res.status(400).json({ error: 'Invalid user role for admin' });
+        }
+      } else if (user.role === 'user') {
+        if (userRole === 'password') {
+          // Update user password logic
+          user.password = password;
+        } else {
+          return res.status(400).json({ error: 'Invalid user role for user' });
+        }
+      } else {
+        return res.status(400).json({ error: 'Invalid user role' });
+      }
+  
+      // Save the updated password
+      await user.save();
+  
+      res.json({ message: 'Password updated successfully' });
+    } catch (error) {
+      console.error('Error updating password:', error);
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
+  
+
+
+// Route for handling password reset
+// Route for handling password reset
+// app.post('/reset-password/:token', async (req, res) => {
+//     const { token } = req.params;
+//     const { newPassword, email } = req.body;
+
+//     try {
+//         // Find the user by email and token
+//         const user = await User.findOne({ email, resetPasswordToken: token });  // Update field name to resetPasswordToken
+
+//         if (!user) {
+//             return res.status(404).json({ message: 'User not found or invalid token' });
+//         }
+
+//         // Update the password based on the role
+//         if (user.role === 'admin') {
+//             user.adminPassword = newPassword;
+//         } else {
+//             user.password = newPassword;
+//         }
+
+//         // Clear the reset token
+//         user.resetPasswordToken = null;  // Update field name to resetPasswordToken
+//         user.resetPasswordExpires = null;  // Update field name to resetPasswordExpires
+
+//         await user.save();
+
+//         res.status(200).json({ message: 'Password reset successful' });
+//     } catch (error) {
+//         console.error('Error resetting password:', error.message);
+//         res.status(500).json({ message: 'An error occurred. Please try again later.' });
+//     }
+// });
 
 // app.get('/reset-password/:token', async (req, res) => {
 //     const { token } = req.params;
@@ -183,8 +278,7 @@ app.post("/forgot-password", async (req, res) => {
 //     }
 // });
 
-
-
+// // Uncomment the following if needed for handling the reset-password POST request
 // app.post('/api/reset-password/:token', async (req, res) => {
 //     const { token } = req.params;
 //     const { newPassword, email } = req.body; // Include email in the request body
@@ -220,92 +314,34 @@ app.post("/forgot-password", async (req, res) => {
 //     }
 // });
 
-app.get('/reset-password/:token', async (req, res) => {
-    const { token } = req.params;
 
-    try {
-        const user = await User.findOne({
-            resetPasswordToken: token,
-            resetPasswordExpires: { $gt: Date.now() },
-        });
+// // Endpoint to update password in the database
+// app.post('/api/update-password', async (req, res) => {
+//     const { email, newPassword } = req.body;
 
-        if (!user) {
-            return res.status(400).json({ error: 'Invalid or expired reset token' });
-        }
+//     try {
+//         const user = await User.findOne({ email });
 
-        // If the user is valid, you might want to redirect or render the reset page on the client side
-        // Here, I'm sending a JSON response with a success message
-        res.json({ success: true, message: 'Valid reset token' });
-    } catch (error) {
-        console.error('Error handling reset password request:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
+//         if (!user) {
+//             return res.status(404).json({ error: 'User not found' });
+//         }
 
-// Uncomment the following if needed for handling the reset-password POST request
-app.post('/api/reset-password/:token', async (req, res) => {
-    const { token } = req.params;
-    const { newPassword, email } = req.body; // Include email in the request body
+//         // Update the user's or admin's password based on the role
+//         if (user.role === 'admin') {
+//             user.adminPassword = bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10));
+//         } else {
+//             user.password = bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10));
+//         }
 
-    try {
-        const user = await User.findOne({
-            resetPasswordToken: token,
-            resetPasswordExpires: { $gt: Date.now() },
-            email: email, // Check for both token and email
-        });
+//         await user.save();
 
-        if (!user) {
-            return res.status(400).json({ error: 'Invalid or expired reset token or email' });
-        }
-
-        // Update the user's or admin's password based on the role
-        if (user.role === 'admin') {
-            user.adminPassword = bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10));
-        } else {
-            user.password = bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10));
-        }
-
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpires = undefined;
-
-        await user.save();
-
-        // Send a success response
-        res.json({ success: true, message: 'Password reset successful' });
-    } catch (error) {
-        console.error('Error resetting password:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-
-// Endpoint to update password in the database
-app.post('/api/update-password', async (req, res) => {
-    const { email, newPassword } = req.body;
-
-    try {
-        const user = await User.findOne({ email });
-
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        // Update the user's or admin's password based on the role
-        if (user.role === 'admin') {
-            user.adminPassword = bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10));
-        } else {
-            user.password = bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10));
-        }
-
-        await user.save();
-
-        // Send a success response
-        res.json({ success: true, message: 'Password updated successfully' });
-    } catch (error) {
-        console.error('Error updating password:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
+//         // Send a success response
+//         res.json({ success: true, message: 'Password updated successfully' });
+//     } catch (error) {
+//         console.error('Error updating password:', error);
+//         res.status(500).json({ error: 'Internal Server Error' });
+//     }
+// });
 
 
 app.get('/profile', async (req, res) => {
@@ -820,42 +856,164 @@ app.get('/getWhatsappNumber', async (req, res) => {
 });
 
 
+// setInterval(async () => {
+//     try {
+//       // Use the globally stored WhatsApp number
+//       const toNumber = `whatsapp:+${globalWhatsappNumber}`;
+  
+//       console.log('To Number:', toNumber); // Log the constructed toNumber for debugging
+  
+//       const reminderList = await Reminder.find({ isReminded: false });
+//       reminderList.forEach(async (reminder) => {
+//         const now = new Date();
+//         if ((new Date(reminder.remindAt) - now) < 0) {
+//           await Reminder.findByIdAndUpdate(reminder._id, { isReminded: true });
+//           const accountSid = process.env.ACCOUNT_SID;
+//           const authToken = process.env.AUTH_TOKEN;
+//           const client = require('twilio')(accountSid, authToken);
+  
+//           client.messages
+//             .create({
+//               body: reminder.reminderMsg,
+//               from: 'whatsapp:+14155238886',
+//               to: `whatsapp:+91${globalWhatsappNumber}`
+//             })
+//             .then(message => {
+//               console.log(message.sid);
+//             })
+//             .catch(error => {
+//               console.error('Twilio error:', error);
+//             });
+//         }
+//       });
+//     } catch (error) {
+//       console.error('Error processing reminders:', error);
+//     }
+//   }, 5000);
+  
+// setInterval(async () => {
+//     try {
+//       console.log('Executing the interval function...');
+  
+//       // Use the globally stored WhatsApp number
+//       const toNumber = `whatsapp:+${globalWhatsappNumber}`;
+//       console.log('To Number:', toNumber);
+  
+//       // Retrieve reminders from the database
+//       const reminderList = await Reminder.find({ isReminded: false });
+//       console.log('Reminder List:', reminderList);
+  
+//       for (const reminder of reminderList) {
+//         const now = new Date();
+//         console.log('Reminder Date:', reminder.remindAt);
+//         console.log('Current Date:', now);
+  
+//         if ((new Date(reminder.remindAt) - now) < 0) {
+//           // Update isReminded flag
+//           const updateResult = await Reminder.findByIdAndUpdate(reminder._id, { isReminded: tmongoose.rusted });
+//           console.log('Update Result:', updateResult);
+  
+//           // Send WhatsApp message
+//           const accountSid = process.env.ACCOUNT_SID;
+//           const authToken = process.env.AUTH_TOKEN;
+//           const client = require('twilio')(accountSid, authToken);
+  
+//           try {
+//             console.log('Sending Twilio message...');
+//             const message = await client.messages.create({
+//               body: reminder.reminderMsg,
+//               from: 'whatsapp:+14155238886',
+//               to: `whatsapp:+91${globalWhatsappNumber}`
+//             });
+  
+//             console.log('Twilio SMS ID:', message.sid);
+//           } catch (error) {
+//             console.error('Twilio error:', error);
+//           }
+//         }
+//       }
+//     } catch (error) {
+//       console.error('Error in the interval function:', error);
+//     }
+//   }, 5000);
+  
+// let globalWhatsappNumber = ''; 
+
+// app.get('/getWhatsappNumber', async (req, res) => {
+//   try {
+//     const userData = await getUserDataFromReq(req);
+
+//     if (!userData) {
+//       console.error('Unauthorized: No user data.');
+//       return res.status(401).json({ error: 'Unauthorized' });
+//     }
+
+//     const userId = userData.id;
+//     console.log('User ID:', userId);
+
+//     const participation = await Participated.findOne({ user: userId }).exec();
+
+//     if (participation) {
+//       globalWhatsappNumber = participation.whatsappNo; // Update the globally stored WhatsApp number
+//       console.log('WhatsApp Number:', globalWhatsappNumber);
+//       res.json({ whatsappNumber: globalWhatsappNumber });
+//     } else {
+//       console.error('User not found or WhatsApp number not available for user ID:', userId);
+//       res.status(404).json({ error: 'User not found or WhatsApp number not available.' });
+//     }
+//   } catch (error) {
+//     console.error('Error fetching WhatsApp number:', error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
+
 setInterval(async () => {
     try {
+      console.log('Executing the interval function...');
+  
       // Use the globally stored WhatsApp number
       const toNumber = `whatsapp:+${globalWhatsappNumber}`;
+      console.log('To Number:', toNumber);
   
-    //   console.log('To Number:', toNumber); // Log the constructed toNumber for debugging
-  
+      // Retrieve reminders from the database
       const reminderList = await Reminder.find({ isReminded: false });
-      reminderList.forEach(async (reminder) => {
+      console.log('Reminder List:', reminderList);
+  
+      for (const reminder of reminderList) {
         const now = new Date();
+        console.log('Reminder Date:', reminder.remindAt);
+        console.log('Current Date:', now);
+  
         if ((new Date(reminder.remindAt) - now) < 0) {
-          await Reminder.findByIdAndUpdate(reminder._id, { isReminded: true });
+          // Update isReminded flag
+          console.log('Updating Reminder:', reminder._id);
+          const updateResult = await Reminder.findByIdAndUpdate(reminder._id, { isReminded: true }, { new: true });
+          console.log('Update Result:', updateResult);
+  
+          // Send WhatsApp message
           const accountSid = process.env.ACCOUNT_SID;
           const authToken = process.env.AUTH_TOKEN;
           const client = require('twilio')(accountSid, authToken);
   
-          client.messages
-            .create({
+          try {
+            console.log('Sending Twilio message...');
+            const message = await client.messages.create({
               body: reminder.reminderMsg,
               from: 'whatsapp:+14155238886',
               to: `whatsapp:+91${globalWhatsappNumber}`
-            })
-            .then(message => {
-              console.log(message.sid);
-            })
-            .catch(error => {
-              console.error('Twilio error:', error);
             });
+  
+            console.log('Twilio SMS ID:', message.sid);
+          } catch (error) {
+            console.error('Twilio error:', error);
+          }
         }
-      });
+      }
     } catch (error) {
-      console.error('Error processing reminders:', error);
+      console.error('Error in the interval function:', error);
     }
   }, 5000);
   
-
 
 app.delete('/deleteReminder/:id', async (req, res) => {
     const { id } = req.params;
@@ -878,3 +1036,4 @@ app.post("/admin/add", addAdmins);
 // app.post('/admin/login', adminController.loginAdmin)
 
 app.listen(4000);
+

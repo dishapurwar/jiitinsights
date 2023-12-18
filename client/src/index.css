@@ -10,6 +10,8 @@ textarea {
 }
 textarea{
     height: 140px;
+    width: 80%;
+    border-bottom: white;
 }
 button{
     @apply bg-gray-300;

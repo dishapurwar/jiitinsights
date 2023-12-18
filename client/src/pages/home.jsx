@@ -9,13 +9,14 @@ import '../App.css';
 
 const FloatingCartButton = styled.button`
   position: fixed;
-  bottom: 0;
+  bottom: 25%;
+  top:50%;
   right: 0;
-  margin: 20px; 
+  margin: 40px; 
   background-color: #yourBackgroundColor;
-  color: #yourTextColor;
+  color: blue;
   border: none;
-  padding: 10px;
+  padding: 18px;
   border-radius: 50%;
   cursor: pointer;
   z-index: 1000;

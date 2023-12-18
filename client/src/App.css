@@ -24,6 +24,7 @@ font-family: 'League Spartan', sans-serif;
 }
 
 body {
+  overflow-x: hidden;
   position: relative;
   background: black; 
   line-height: 1.5;
@@ -49,9 +50,9 @@ font-weight: 500;
 text-decoration: inherit;
 transition: 0.5s ease;
 }
-a:hover {
-color: #800080;
-}
+/* a:hover {
+color: #535bf2;
+} */
 
 
 p{
@@ -1051,6 +1052,7 @@ height: 50px;
 border: 2px solid #eee;
 border-radius: 6px;
 font-size: 14px;
+visibility: visible;
 }
 
 .checkout .form-control:focus {
@@ -1073,6 +1075,7 @@ position: absolute;
 top: 16px;
 left: 11px;
 color: #989898;
+visibility: visible;
 }
 
 .checkout .input input{
@@ -1084,11 +1087,13 @@ text-indent: 25px;
 
 font-size: 13px;
 margin-left: 6px;
+visibility: visible;
 }
 
 .checkout .certificate-text{
 
 font-size: 12px;
+visibility: visible;
 }
 
 
@@ -1125,6 +1130,8 @@ flex: 1 1 auto;
 padding: 24px 1rem !important;
 
 }
+
+
 
 
 
@@ -1180,7 +1187,7 @@ ul{
 	height: 2px;
 	box-sizing: border-box;
 	width: 50px;
-}
+} 
 .footer-col ul li:not(:last-child){
 	margin-bottom: 10px;
 }
@@ -1193,7 +1200,7 @@ ul{
 	color: #bbbbbb;
 	display: block;
 	transition: all 0.3s ease;
-}
+} 
 .footer-col ul li a:hover{
 	color: #ffffff;
 	padding-left: 8px;
@@ -1241,4 +1248,43 @@ ul{
   .footer-col{
     width: 100%;
 }
+}
+
+
+
+.animated-input {
+  transition: border-color 0.3s ease-in-out;
+}
+
+.animated-input:focus {
+  border-color: #4caf50; /* Green color or any color you prefer */
+}
+
+.animated-button {
+  transition: transform 0.3s ease-in-out;
+}
+
+.animated-button:hover {
+  transform: scale(1.1); /* Increase size on hover */
+}
+
+
+/* // Define border-gradient in your CSS (or add it to your global styles)
+// For example, you can define it as follows: */
+ .border-gradient {
+   border: 2px solid transparent;
+  background-clip: padding-box;
+background-image: linear-gradient(to bottom right, #4a5568, #2d3748);
+ border-image: linear-gradient(to bottom right, #4a5568, #2d3748);
+  border-image-slice: 1;
+}
+
+.input-text{
+  @apply font-poppins bg-transparent border border-t-0 border-l-0 border-r-0 focus:outline-none text-white tracking-wide;
+}
+
+video{
+width: 100%;
+height: 100%;
+object-fit: cover;
 }

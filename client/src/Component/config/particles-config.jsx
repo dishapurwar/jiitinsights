@@ -1,10 +1,9 @@
 const particlesConfig = 
 {
-
   "autoPlay": true,
   "background": {
     "color": {
-      "value": ""
+      "value": "#000"
     },
     "image": "",
     "position": "",
@@ -26,7 +25,7 @@ const particlesConfig =
   "delay": 0,
   "fullScreen": {
     "enable": true,
-    "zIndex": 100
+    "zIndex": -1
   },
   "detectRetina": true,
   "duration": 0,
@@ -35,7 +34,7 @@ const particlesConfig =
     "detectsOn": "window",
     "events": {
       "onClick": {
-        "enable": true,
+        "enable": false,
         "mode": []
       },
       "onDiv": {
@@ -45,8 +44,8 @@ const particlesConfig =
         "type": "circle"
       },
       "onHover": {
-        "enable": true,
-        "mode": "trail",
+        "enable": false,
+        "mode": [],
         "parallax": {
           "enable": false,
           "force": 2,
@@ -60,42 +59,9 @@ const particlesConfig =
     },
     "modes": {
       "trail": {
-        "delay": 0.005,
-        "pauseOnStop": true,
-        "quantity": 5,
-        "particles": {
-          "color": {
-            "value": "#ff0000",
-            "animation": {
-              "enable": true,
-              "speed": 400,
-              "sync": true
-            }
-          },
-          "collisions": {
-            "enable": false
-          },
-          "links": {
-            "enable": false
-          },
-          "move": {
-            "outModes": {
-              "default": "destroy"
-            },
-            "speed": 2
-          },
-          "size": {
-            "value": 5,
-            "animation": {
-              "enable": true,
-              "speed": 5,
-              "minimumValue": 1,
-              "sync": true,
-              "startValue": "min",
-              "destroy": "max"
-            }
-          }
-        }
+        "delay": 1,
+        "pauseOnStop": false,
+        "quantity": 1
       },
       "attract": {
         "distance": 200,
@@ -231,16 +197,16 @@ const particlesConfig =
       }
     },
     "color": {
-      "value": "#ff0000",
+      "value": "#FF0000",
       "animation": {
         "h": {
           "count": 0,
           "enable": true,
           "offset": 0,
-          "speed": 50,
+          "speed": 10,
           "delay": 0,
           "decay": 0,
-          "sync": false
+          "sync": true
         },
         "s": {
           "count": 0,
@@ -270,10 +236,10 @@ const particlesConfig =
       },
       "attract": {
         "distance": 200,
-        "enable": false,
+        "enable": true,
         "rotate": {
-          "x": 3000,
-          "y": 3000
+          "x": 2000,
+          "y": 2000
         }
       },
       "center": {
@@ -294,7 +260,7 @@ const particlesConfig =
         "maxSpeed": 50
       },
       "path": {
-        "clamp": true,
+        "clamp": false,
         "delay": {
           "random": {
             "enable": false,
@@ -302,28 +268,37 @@ const particlesConfig =
           },
           "value": 0
         },
-        "enable": false,
-        "options": {}
+        "enable": true,
+        "options": {
+          "sides": 6,
+          "turnSteps": 30,
+          "angle": 30
+        },
+        "generator": "polygonPathGenerator"
       },
       "outModes": {
-        "default": "out",
-        "bottom": "out",
-        "left": "out",
-        "right": "out",
-        "top": "out"
+        "default": "destroy",
+        "bottom": "destroy",
+        "left": "destroy",
+        "right": "destroy",
+        "top": "destroy"
       },
       "random": false,
       "size": false,
-      "speed": 2,
+      "speed": 3,
       "spin": {
         "acceleration": 0,
         "enable": false
       },
       "straight": false,
       "trail": {
-        "enable": false,
-        "length": 10,
-        "fill": {}
+        "enable": true,
+        "length": 20,
+        "fill": {
+          "color": {
+            "value": "#000"
+          }
+        }
       },
       "vibrate": false,
       "warp": false
@@ -335,28 +310,24 @@ const particlesConfig =
         "height": 1080
       },
       "limit": 0,
-      "value": 100
+      "value": 0
     },
     "opacity": {
       "random": {
-        "enable": true,
-        "minimumValue": 0.3
+        "enable": false,
+        "minimumValue": 0.1
       },
-      "value": {
-        "min": 0.3,
-        "max": 0.8
-      },
+      "value": 1,
       "animation": {
         "count": 0,
-        "enable": true,
-        "speed": 0.5,
+        "enable": false,
+        "speed": 2,
         "decay": 0,
         "delay": 0,
         "sync": false,
         "mode": "auto",
         "startValue": "random",
-        "destroy": "none",
-        "minimumValue": 0.3
+        "destroy": "none"
       }
     },
     "reduceDuplicates": false,
@@ -379,28 +350,56 @@ const particlesConfig =
     },
     "size": {
       "random": {
-        "enable": true,
+        "enable": false,
         "minimumValue": 1
       },
-      "value": {
-        "min": 1,
-        "max": 3
-      },
+      "value": 2,
       "animation": {
         "count": 0,
-        "enable": true,
-        "speed": 3,
+        "enable": false,
+        "speed": 5,
         "decay": 0,
         "delay": 0,
         "sync": false,
         "mode": "auto",
         "startValue": "random",
-        "destroy": "none",
-        "minimumValue": 1
+        "destroy": "none"
       }
     },
     "stroke": {
-      "width": 0
+      "width": 0,
+      "color": {
+        "value": "",
+        "animation": {
+          "h": {
+            "count": 0,
+            "enable": false,
+            "offset": 0,
+            "speed": 0,
+            "delay": 0,
+            "decay": 0,
+            "sync": false
+          },
+          "s": {
+            "count": 0,
+            "enable": false,
+            "offset": 0,
+            "speed": 1,
+            "delay": 0,
+            "decay": 0,
+            "sync": true
+          },
+          "l": {
+            "count": 0,
+            "enable": false,
+            "offset": 0,
+            "speed": 1,
+            "delay": 0,
+            "decay": 0,
+            "sync": true
+          }
+        }
+      }
     },
     "zIndex": {
       "random": {
@@ -543,11 +542,11 @@ const particlesConfig =
     "links": {
       "blink": false,
       "color": {
-        "value": "random"
+        "value": "#fff"
       },
       "consent": false,
       "distance": 100,
-      "enable": true,
+      "enable": false,
       "frequency": 1,
       "opacity": 1,
       "shadow": {
@@ -584,7 +583,30 @@ const particlesConfig =
   "style": {},
   "themes": [],
   "zLayers": 100,
-  "emitters": [],
+  "emitters": {
+    "autoPlay": true,
+    "fill": true,
+    "life": {
+      "wait": false
+    },
+    "rate": {
+      "quantity": 1,
+      "delay": 0.25
+    },
+    "shape": "square",
+    "startCount": 0,
+    "size": {
+      "mode": "percent",
+      "height": 0,
+      "width": 0
+    },
+    "direction": "none",
+    "particles": {},
+    "position": {
+      "x": 50,
+      "y": 50
+    }
+  },
   "motion": {
     "disable": false,
     "reduce": {
@@ -593,7 +615,6 @@ const particlesConfig =
     }
   }
 }
-      
 
 
 export default particlesConfig

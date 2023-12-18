@@ -27,8 +27,8 @@ const UserSchema = new Schema({
     role: { type: String, enum: ['admin', 'user'], default: 'user' },
     userName: { type: String, unique: true, sparse: true, required: function () { return this.role === 'admin'; } },
     adminPassword: { type: String, required: function () { return this.role === 'admin'; } },
-    resetPasswordToken: String,
-    resetPasswordExpires: Date,
+    resetPasswordToken: String,  // Update field name to resetPasswordToken
+    resetPasswordExpires: Date,  // Update field name to resetPasswordExpires
 });
 
 const UserModel = mongoose.model('User', UserSchema);

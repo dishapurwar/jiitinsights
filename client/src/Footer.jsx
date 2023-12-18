@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 
+
 const Footer = () => {
   return (
     <footer className="footer">
@@ -31,10 +32,11 @@ const Footer = () => {
           <div className="footer-col">
             <h4>Follow Us</h4>
             <div className="social-links">
-              <a href="#"><i className="fab fa-facebook-f"></i></a>
-              <a href="#"><i className="fa-brands fa-github"></i></a>
-              <a href="#"><i className="fab fa-instagram"></i></a>
-              <a href="#"><i className="fab fa-linkedin-in"></i></a>
+            <a href="#"><i className="fab fa-facebook-f"></i></a>
+            <a href="#"><i className="fab fa-github"></i></a>
+            <a href="#"><i className="fab fa-instagram"></i></a>
+            <a href="#"><i className="fab fa-linkedin-in"></i></a>
+
             </div>
           </div>
         </div>
